@@ -1,0 +1,57 @@
+vale_transporte= int(input("Quantos funcionarios usam vale transpote?, se nenhum digite 0"))
+    if vale_transporte != 0:
+        dias = float(input("Quantos dias por mês os funcionarios vão até uma instalação da empresa?"))
+        trem =  float(input("Quantos funcionarios usam apenas trem para se locomover?"))
+        if trem != 0:
+            tempo_trem = float(input("Quantos tempo em horas médias por dia usam para se locomover de Trem? Ida e volta"))
+        onibus = float(input("Quantos funcionarios usam apenas Ônibus para se locomover?"))
+        if onibus != 0:
+            km_onibus = float(input("Quantos Kms em média por dia usam para se locomover de Ônibus? Ida e volta"))
+      
+        #calculo transporte
+        quantidade_diesel_mes = 3*km_onibus*dias*onibus
+        # densidade diesel  = 0,820 / emissao de CO2 queima de diesel = 2,6 / 12% de biodiesel misturado/ dividir pela média de pessoas num onibus
+        CO2_onibus =  (quantidade_diesel_mes*0.820*2.6*0.88)/30 
+        print ("Carbono pelo transporte de ônibus:",CO2_onibus)
+        # Média de potencia dos trens = 850097,9W /dividi pela capacidade maxima do trem horario de pico
+        watz_trem = 850097.9*tempo_trem*dias*trem
+        CO2_trem = (watz_trem *0.09)/1600
+        print(CO2_trem)
+        print(CO2_onibus)
+    if vale_transporte == 0:
+      CO2_trem = 0
+      CO2_onibus = 0
+      print("não há gasto com transporte")
+    energia = float(input("Quantos KWs/h sua empresa gasta?"))
+    #Conferindo se o arquivo ja existe
+    relatorio = []
+    Arquivo = open("Relatório crédito de carbono.txt","a")
+    Arquivo.close()
+    
+    # CO2 energia elétrica da empresa
+    total_empresa_energia = energia*0.09
+    print("Kg de CO2 pela energia:",total_empresa_energia)
+    
+    CO2_total = (CO2_trem+CO2_onibus+total_empresa_energia)
+    #conferir se há dados anteriores
+    Arquivo = open("Relatório crédito de carbono.txt","r")
+    CO2_lista = []
+    CO2_lista = Arquivo.readlines()
+    Arquivo.close()
+    # calculo do crédito de carbono
+    CO2_anterior = 0
+    for i in range(0,len(CO2_lista)):
+      A = float(CO2_lista[i])
+      CO2_anterior = A + CO2_anterior
+      
+    if CO2_lista != [] :
+      credito_carbono = (float(CO2_anterior) - CO2_total)/1000
+
+    else: 
+      credito_carbono = 0  
+    print("Saldo crédito de carbono",credito_carbono)
+    # Salvar o resultado num arquivo txt
+    Arquivo = open("Relatório crédito de carbono.txt","a")
+    relatorio.append(str(CO2_total)+"\n")
+    Arquivo.writelines(relatorio)
+    Arquivo.close()
